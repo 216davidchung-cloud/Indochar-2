@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Biochar — Carbon Into the Earth</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400&family=Literata:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --soil:    #1a1208;
+      --char:    #0d0d0a;
+      --ember:   #c45c1a;
+      --ash:     #d4c9b0;
+      --moss:    #4a6741;
+      --cream:   #f2ead8;
+      --mid:     #2e2416;
+      --faint:   rgba(212,201,176,0.08);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--char);
+      color: var(--ash);
+      font-family: 'Literata', Georgia, serif;
+      font-weight: 300;
+      line-height: 1.75;
+      overflow-x: hidden;
+    }
+
+    /* ── GRAIN OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9999;
+      opacity: .45;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; width: 100%; z-index: 100;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.4rem 3rem;
+      background: linear-gradient(to bottom, rgba(13,13,10,.9), transparent);
+      backdrop-filter: blur(2px);
+    }
+    .nav-logo {
+      font-family: 'DM Mono', monospace;
+      font-size: .75rem; letter-spacing: .2em;
+      color: var(--ember); text-transform: uppercase; text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      font-family: 'DM Mono', monospace;
+      font-size: .7rem; letter-spacing: .15em;
+      color: var(--ash); text-decoration: none; text-transform: uppercase;
+      opacity: .6; transition: opacity .3s;
+    }
+    .nav-links a:hover { opacity: 1; color: var(--ember); }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 0 3rem 5rem;
+      position: relative; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 60% 30%, rgba(196,92,26,.18) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 80% at 20% 80%, rgba(74,103,65,.15) 0%, transparent 60%),
+        linear-gradient(160deg, #0d0d0a 0%, #1a1208 60%, #0d0d0a 100%);
+    }
+    .hero-rings {
+      position: absolute; top: 10%; right: 5%;
+      width: 520px; height: 520px;
+    }
+    .hero-rings circle {
+      fill: none; stroke: var(--ember);
+      transform-origin: center;
+      animation: rotate-ring 30s linear infinite;
+    }
+    .hero-rings circle:nth-child(2) { animation-duration: 45s; animation-direction: reverse; }
+    .hero-rings circle:nth-child(3) { animation-duration: 60s; }
+    @keyframes rotate-ring {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    .hero-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: .7rem; letter-spacing: .3em; text-transform: uppercase;
+      color: var(--ember); margin-bottom: 1.2rem;
+      position: relative; opacity: 0;
+      animation: fade-up .9s .3s ease forwards;
+    }
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3.5rem, 9vw, 8rem);
+      line-height: 1.0; font-weight: 700;
+      color: var(--cream);
+      position: relative; opacity: 0;
+      animation: fade-up .9s .5s ease forwards;
+    }
+    h1 em { color: var(--ember); font-style: italic; }
+    .hero-sub {
+      max-width: 480px; margin-top: 1.8rem;
+      font-size: 1.05rem; color: var(--ash); opacity: 0;
+      animation: fade-up .9s .7s ease forwards;
+    }
+    .hero-cta {
+      margin-top: 2.5rem; display: flex; gap: 1.2rem; align-items: center;
+      opacity: 0; animation: fade-up .9s .9s ease forwards;
+    }
+    .btn {
+      display: inline-block; padding: .75rem 2rem;
+      background: var(--ember); color: var(--char);
+      font-family: 'DM Mono', monospace; font-size: .75rem;
+      letter-spacing: .15em; text-transform: uppercase; text-decoration: none;
+      border: none; cursor: pointer;
+      transition: background .3s, transform .2s;
+    }
+    .btn:hover { background: var(--cream); transform: translateY(-2px); }
+    .btn-ghost {
+      background: transparent; color: var(--ash);
+      border: 1px solid rgba(212,201,176,.3);
+    }
+    .btn-ghost:hover { background: var(--faint); color: var(--cream); }
+
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── SECTION BASE ── */
+    section { padding: 7rem 3rem; position: relative; }
+    .section-label {
+      font-family: 'DM Mono', monospace;
+      font-size: .65rem; letter-spacing: .3em; text-transform: uppercase;
+      color: var(--ember); margin-bottom: .8rem;
+    }
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      color: var(--cream); line-height: 1.2; font-weight: 700;
+      max-width: 700px;
+    }
+    h2 em { font-style: italic; color: var(--ember); }
+    p { max-width: 640px; margin-top: 1.2rem; }
+
+    /* ── DIVIDER ── */
+    .divider {
+      width: 3rem; height: 1px;
+      background: var(--ember); margin: 2rem 0;
+    }
+
+    /* ── WHAT IS BIOCHAR ── */
+    #what { background: var(--soil); }
+    .what-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 5rem;
+      align-items: center; margin-top: 4rem;
+    }
+    .char-visual {
+      width: 100%; aspect-ratio: 1;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .char-visual svg { width: 100%; height: 100%; }
+
+    /* ── BENEFITS ── */
+    #benefits { background: var(--char); }
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2px; margin-top: 4rem;
+    }
+    .benefit-card {
+      background: var(--faint);
+      border: 1px solid rgba(212,201,176,.07);
+      padding: 2.5rem; position: relative; overflow: hidden;
+      transition: background .4s;
+    }
+    .benefit-card:hover { background: rgba(196,92,26,.08); }
+    .benefit-card::before {
+      content: attr(data-num);
+      position: absolute; top: 1.2rem; right: 1.5rem;
+      font-family: 'Playfair Display', serif; font-size: 4rem;
+      color: rgba(212,201,176,.05); line-height: 1;
+    }
+    .benefit-icon { font-size: 1.8rem; margin-bottom: 1rem; }
+    .benefit-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem; color: var(--cream); margin-bottom: .6rem;
+    }
+    .benefit-card p { font-size: .9rem; margin-top: 0; }
+
+    /* ── PROCESS ── */
+    #process { background: var(--mid); }
+    .process-steps {
+      margin-top: 4rem; position: relative;
+    }
+    .process-steps::before {
+      content: '';
+      position: absolute; left: 1.5rem; top: 0; bottom: 0;
+      width: 1px; background: linear-gradient(to bottom, var(--ember), transparent);
+    }
+    .step {
+      display: flex; gap: 2.5rem; padding: 2rem 0 2rem 4.5rem;
+      position: relative;
+      border-bottom: 1px solid rgba(212,201,176,.06);
+    }
+    .step:last-child { border-bottom: none; }
+    .step-dot {
+      position: absolute; left: .85rem; top: 2.4rem;
+      width: 1.3rem; height: 1.3rem; border-radius: 50%;
+      background: var(--char); border: 2px solid var(--ember);
+      flex-shrink: 0;
+    }
+    .step-num {
+      font-family: 'DM Mono', monospace; font-size: .65rem;
+      letter-spacing: .2em; color: var(--ember);
+      text-transform: uppercase; margin-bottom: .5rem;
+    }
+    .step h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem; color: var(--cream); margin-bottom: .5rem;
+    }
+    .step p { margin: 0; font-size: .92rem; }
+
+    /* ── STATS ── */
+    #stats {
+      background: var(--ember);
+      padding: 5rem 3rem;
+    }
+    .stats-inner {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 3rem; max-width: 900px; margin: 0 auto; text-align: center;
+    }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      color: var(--char); line-height: 1; font-weight: 700;
+    }
+    .stat-label {
+      font-family: 'DM Mono', monospace; font-size: .7rem;
+      letter-spacing: .15em; text-transform: uppercase;
+      color: rgba(13,13,10,.7); margin-top: .5rem;
+    }
+
+    /* ── APPLICATIONS ── */
+    #applications { background: var(--soil); }
+    .app-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem; margin-top: 4rem;
+    }
+    .app-card {
+      border: 1px solid rgba(212,201,176,.1);
+      padding: 2rem; position: relative;
+      transition: border-color .3s, transform .3s;
+    }
+    .app-card:hover { border-color: var(--ember); transform: translateY(-4px); }
+    .app-tag {
+      display: inline-block;
+      font-family: 'DM Mono', monospace; font-size: .6rem;
+      letter-spacing: .2em; text-transform: uppercase;
+      padding: .25rem .7rem; background: rgba(196,92,26,.15);
+      color: var(--ember); margin-bottom: 1rem;
+    }
+    .app-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem; color: var(--cream); margin-bottom: .5rem;
+    }
+    .app-card p { font-size: .875rem; margin: 0; }
+
+    /* ── CLIMATE ── */
+    #climate { background: var(--char); }
+    .climate-split {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 5rem;
+      align-items: start; margin-top: 4rem;
+    }
+    .climate-quote {
+      font-family: 'Playfair Display', serif; font-style: italic;
+      font-size: 1.6rem; line-height: 1.4; color: var(--cream);
+      border-left: 3px solid var(--ember); padding-left: 1.5rem;
+    }
+
+    /* ── FAQ ── */
+    #faq { background: var(--mid); }
+    .faq-list { margin-top: 3rem; max-width: 720px; }
+    .faq-item {
+      border-bottom: 1px solid rgba(212,201,176,.08);
+      overflow: hidden;
+    }
+    .faq-q {
+      width: 100%; text-align: left; background: none; border: none;
+      color: var(--cream); cursor: pointer; padding: 1.5rem 0;
+      font-family: 'Playfair Display', serif; font-size: 1.05rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .faq-q .arrow {
+      font-size: .8rem; color: var(--ember);
+      transition: transform .3s;
+    }
+    .faq-item.open .arrow { transform: rotate(180deg); }
+    .faq-a {
+      max-height: 0; overflow: hidden;
+      transition: max-height .4s ease, padding .3s;
+      font-size: .92rem;
+    }
+    .faq-item.open .faq-a {
+      max-height: 400px; padding-bottom: 1.5rem;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--soil);
+      padding: 4rem 3rem 2.5rem;
+      border-top: 1px solid rgba(212,201,176,.06);
+    }
+    .footer-top {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 3rem; flex-wrap: wrap; gap: 2rem;
+    }
+    .footer-brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem; color: var(--cream);
+    }
+    .footer-brand span { color: var(--ember); }
+    .footer-links { display: flex; gap: 3rem; flex-wrap: wrap; }
+    .footer-col h4 {
+      font-family: 'DM Mono', monospace; font-size: .65rem;
+      letter-spacing: .2em; text-transform: uppercase;
+      color: var(--ember); margin-bottom: 1rem;
+    }
+    .footer-col a {
+      display: block; color: var(--ash); text-decoration: none;
+      font-size: .85rem; margin-bottom: .5rem; opacity: .6;
+      transition: opacity .3s;
+    }
+    .footer-col a:hover { opacity: 1; }
+    .footer-bottom {
+      border-top: 1px solid rgba(212,201,176,.06);
+      padding-top: 1.5rem;
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+    }
+    .footer-bottom p {
+      font-family: 'DM Mono', monospace; font-size: .65rem;
+      letter-spacing: .1em; color: var(--ash); opacity: .35; margin: 0;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      section { padding: 5rem 1.5rem; }
+      #hero { padding: 0 1.5rem 4rem; }
+      .what-grid, .climate-split { grid-template-columns: 1fr; gap: 3rem; }
+      .hero-rings { width: 280px; height: 280px; top: 5%; right: -5%; }
+      footer { padding: 3rem 1.5rem 2rem; }
+      .footer-top { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">Biochar</a>
+  <ul class="nav-links">
+    <li><a href="#what">What is it</a></li>
+    <li><a href="#benefits">Benefits</a></li>
+    <li><a href="#process">Process</a></li>
+    <li><a href="#applications">Applications</a></li>
+    <li><a href="#climate">Climate</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <svg class="hero-rings" viewBox="0 0 520 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="260" cy="260" r="240" stroke="rgba(196,92,26,0.12)" stroke-width="1" stroke-dasharray="8 12"/>
+    <circle cx="260" cy="260" r="190" stroke="rgba(196,92,26,0.18)" stroke-width="1" stroke-dasharray="4 8"/>
+    <circle cx="260" cy="260" r="130" stroke="rgba(196,92,26,0.25)" stroke-width="1" stroke-dasharray="2 6"/>
+    <circle cx="260" cy="260" r="70"  fill="rgba(196,92,26,0.06)" stroke="rgba(196,92,26,0.4)" stroke-width="1"/>
+    <text x="260" y="268" text-anchor="middle" font-family="DM Mono" font-size="11" fill="rgba(196,92,26,0.7)" letter-spacing="3">CARBON</text>
+  </svg>
+  <p class="hero-eyebrow">Ancient solution. Urgent need.</p>
+  <h1>Turn fire<br>into <em>fertility</em></h1>
+  <p class="hero-sub">Biochar is charred organic matter that locks carbon underground for centuries — improving soils, filtering water, and drawing down CO₂ from our atmosphere.</p>
+  <div class="hero-cta">
+    <a href="#what" class="btn">Explore Biochar</a>
+    <a href="#process" class="btn btn-ghost">How It's Made</a>
+  </div>
+</section>
+
+<!-- WHAT IS BIOCHAR -->
+<section id="what">
+  <p class="section-label">The Basics</p>
+  <h2>A charcoal made by<br><em>nature's oldest process</em></h2>
+  <div class="divider"></div>
+  <div class="what-grid">
+    <div>
+      <p>Biochar is produced when organic materials — wood, crop residues, manure, or plant matter — are heated to high temperatures in a low-oxygen environment. This process, called <strong style="color:var(--cream)">pyrolysis</strong>, prevents combustion and converts carbon into a stable, porous solid.</p>
+      <p>Unlike burning, which releases all stored carbon back into the atmosphere as CO₂, pyrolysis locks carbon into a crystalline structure that resists decomposition for hundreds to thousands of years.</p>
+      <p>Indigenous peoples in the Amazon Basin practiced early versions of biochar production over 2,500 years ago, creating the legendary <em style="color:var(--cream)">Terra Preta</em> ("dark earth") soils — among the most fertile on the planet.</p>
+    </div>
+    <div class="char-visual">
+      <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Porous structure illustration -->
+        <defs>
+          <radialGradient id="charGrad" cx="50%" cy="40%" r="55%">
+            <stop offset="0%" stop-color="#3a2a18"/>
+            <stop offset="100%" stop-color="#0d0d0a"/>
+          </radialGradient>
+        </defs>
+        <rect x="60" y="60" width="280" height="280" rx="8" fill="url(#charGrad)" stroke="rgba(196,92,26,0.3)" stroke-width="1"/>
+        <!-- Pores -->
+        <circle cx="130" cy="130" r="28" fill="#0d0d0a" stroke="rgba(196,92,26,0.5)" stroke-width="1"/>
+        <circle cx="200" cy="110" r="18" fill="#0d0d0a" stroke="rgba(196,92,26,0.4)" stroke-width="1"/>
+        <circle cx="270" cy="145" r="24" fill="#0d0d0a" stroke="rgba(196,92,26,0.5)" stroke-width="1"/>
+        <circle cx="150" cy="210" r="20" fill="#0d0d0a" stroke="rgba(196,92,26,0.4)" stroke-width="1"/>
+        <circle cx="240" cy="220" r="32" fill="#0d0d0a" stroke="rgba(196,92,26,0.5)" stroke-width="1"/>
+        <circle cx="120" cy="290" r="22" fill="#0d0d0a" stroke="rgba(196,92,26,0.4)" stroke-width="1"/>
+        <circle cx="300" cy="300" r="18" fill="#0d0d0a" stroke="rgba(196,92,26,0.4)" stroke-width="1"/>
+        <circle cx="200" cy="275" r="14" fill="#0d0d0a" stroke="rgba(196,92,26,0.35)" stroke-width="1"/>
+        <!-- Carbon label -->
+        <text x="200" y="380" text-anchor="middle" font-family="DM Mono, monospace" font-size="10" fill="rgba(212,201,176,0.4)" letter-spacing="4">POROUS CARBON MATRIX</text>
+        <!-- Surface area note -->
+        <line x1="270" y1="145" x2="340" y2="90" stroke="rgba(196,92,26,0.4)" stroke-width="1" stroke-dasharray="3 3"/>
+        <text x="345" y="87" font-family="DM Mono, monospace" font-size="9" fill="rgba(196,92,26,0.7)">micropores</text>
+        <text x="345" y="98" font-family="DM Mono, monospace" font-size="9" fill="rgba(196,92,26,0.5)">~300 m²/g</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- BENEFITS -->
+<section id="benefits">
+  <p class="section-label">Why It Matters</p>
+  <h2>Benefits spanning <em>soil, water, and sky</em></h2>
+  <div class="divider"></div>
+  <div class="benefits-grid">
+    <div class="benefit-card" data-num="01">
+      <div class="benefit-icon">🌱</div>
+      <h3>Soil Fertility</h3>
+      <p>Biochar's porous structure harbours beneficial microbes and retains nutrients that would otherwise leach away. Studies show crop yield improvements of 10–40% in degraded soils.</p>
+    </div>
+    <div class="benefit-card" data-num="02">
+      <div class="benefit-icon">💧</div>
+      <h3>Water Retention</h3>
+      <p>Sandy soils amended with biochar hold significantly more moisture, reducing irrigation needs by up to 30% and improving drought resilience for smallholder farmers.</p>
+    </div>
+    <div class="benefit-card" data-num="03">
+      <div class="benefit-icon">♻️</div>
+      <h3>Carbon Sequestration</h3>
+      <p>Converting biomass to biochar and burying it transfers atmospheric CO₂ into a stable form. Each tonne of biochar sequesters approximately 2.2–3.7 tonnes of CO₂ equivalent.</p>
+    </div>
+    <div class="benefit-card" data-num="04">
+      <div class="benefit-icon">🧪</div>
+      <h3>Reduced Emissions</h3>
+      <p>Biochar application to soils significantly reduces N₂O emissions (a greenhouse gas 265× more potent than CO₂) by up to 50–80% through modified soil chemistry.</p>
+    </div>
+    <div class="benefit-card" data-num="05">
+      <div class="benefit-icon">🔬</div>
+      <h3>Contaminant Adsorption</h3>
+      <p>High surface area and charge make biochar effective at binding heavy metals, pesticides, and other contaminants in soil and water filtration systems.</p>
+    </div>
+    <div class="benefit-card" data-num="06">
+      <div class="benefit-icon">🌡️</div>
+      <h3>Reduced Methane</h3>
+      <p>Rice paddies amended with biochar emit substantially less methane, offering climate benefits in one of agriculture's most emissions-intensive crops.</p>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section id="stats">
+  <div class="stats-inner">
+    <div>
+      <div class="stat-num">2,500+</div>
+      <div class="stat-label">years of use by indigenous Amazonian farmers</div>
+    </div>
+    <div>
+      <div class="stat-num">~700°C</div>
+      <div class="stat-label">typical pyrolysis temperature</div>
+    </div>
+    <div>
+      <div class="stat-num">1,000yr</div>
+      <div class="stat-label">carbon stability in soil</div>
+    </div>
+    <div>
+      <div class="stat-num">2 Gt</div>
+      <div class="stat-label">annual CO₂ removal potential by 2050</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="process">
+  <p class="section-label">Production</p>
+  <h2>From biomass<br>to <em>black gold</em></h2>
+  <div class="divider"></div>
+  <p>The biochar production process is elegant in its simplicity — ancient technology now refined with modern efficiency.</p>
+  <div class="process-steps">
+    <div class="step">
+      <div class="step-dot"></div>
+      <div>
+        <p class="step-num">Step 01</p>
+        <h3>Feedstock Collection</h3>
+        <p>Almost any organic material works: agricultural waste (rice husks, corn cobs, wood chips), forestry residues, sewage sludge, algae, or dedicated energy crops. The type of feedstock influences the final biochar's properties.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-dot"></div>
+      <div>
+        <p class="step-num">Step 02</p>
+        <h3>Drying</h3>
+        <p>Feedstock is dried to reduce moisture content, ideally below 15–20%. High moisture reduces energy efficiency and biochar quality. Drying can be done with waste heat from the pyrolysis process itself, creating a closed-loop system.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-dot"></div>
+      <div>
+        <p class="step-num">Step 03</p>
+        <h3>Pyrolysis</h3>
+        <p>The dried material is heated to 300–700°C in an oxygen-limited environment. Slow pyrolysis (hours at lower temperatures) maximises biochar yield. Fast pyrolysis produces more bio-oil for fuel. The process co-produces syngas, which can generate electricity.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-dot"></div>
+      <div>
+        <p class="step-num">Step 04</p>
+        <h3>Cooling & Quenching</h3>
+        <p>The hot char must be carefully cooled and quenched to prevent spontaneous combustion. Water or liquid nutrients (compost tea, liquid fertiliser) are used for quenching — simultaneously cooling the char and beginning the activation process.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-dot"></div>
+      <div>
+        <p class="step-num">Step 05</p>
+        <h3>Activation & Blending</h3>
+        <p>Raw biochar is highly alkaline and initially nutrient-poor. "Charging" it with compost, manure, or urine fills its pores with beneficial microbes and nutrients — making it immediately plant-available when applied to soil.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-dot"></div>
+      <div>
+        <p class="step-num">Step 06</p>
+        <h3>Soil Application</h3>
+        <p>Biochar is typically applied at rates of 1–5 tonnes per hectare, incorporated into the top soil layer. Once in the ground, it functions indefinitely — ancient terra preta soils remain fertile after millennia.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- APPLICATIONS -->
+<section id="applications">
+  <p class="section-label">Use Cases</p>
+  <h2>Where biochar is<br><em>changing outcomes</em></h2>
+  <div class="divider"></div>
+  <div class="app-grid">
+    <div class="app-card">
+      <span class="app-tag">Agriculture</span>
+      <h3>Crop Production</h3>
+      <p>Improves yield in acidic, degraded, and nutrient-poor soils — especially impactful for smallholder farming in sub-Saharan Africa and Southeast Asia.</p>
+    </div>
+    <div class="app-card">
+      <span class="app-tag">Horticulture</span>
+      <h3>Potting Mixes</h3>
+      <p>Blended into growing media for nurseries and urban gardens, biochar improves aeration, prevents root rot, and reduces watering frequency.</p>
+    </div>
+    <div class="app-card">
+      <span class="app-tag">Water</span>
+      <h3>Filtration Systems</h3>
+      <p>Used in constructed wetlands, bioswales, and point-of-use filters to remove nitrates, phosphorus, heavy metals, and pathogens.</p>
+    </div>
+    <div class="app-card">
+      <span class="app-tag">Livestock</span>
+      <h3>Animal Feed</h3>
+      <p>Added to feed, biochar reduces gut pathogens, improves digestion, decreases enteric methane emissions, and enriches manure for composting.</p>
+    </div>
+    <div class="app-card">
+      <span class="app-tag">Construction</span>
+      <h3>Carbon-Negative Concrete</h3>
+      <p>Biochar added to concrete mixes sequesters carbon in the built environment while improving insulation properties and reducing cement needed.</p>
+    </div>
+    <div class="app-card">
+      <span class="app-tag">Remediation</span>
+      <h3>Contaminated Land</h3>
+      <p>Immobilises heavy metals and organic pollutants in contaminated industrial sites, brownfields, and mine tailings — making land suitable for reuse.</p>
+    </div>
+    <div class="app-card">
+      <span class="app-tag">Energy</span>
+      <h3>Co-production</h3>
+      <p>Modern pyrolysis units generate biochar, bio-oil, and syngas simultaneously — creating energy-positive systems where heat powers the process.</p>
+    </div>
+    <div class="app-card">
+      <span class="app-tag">Compost</span>
+      <h3>Composting Aid</h3>
+      <p>Accelerates composting by providing microbial habitat, absorbing odours and leachate, and improving the finished compost's nutrient profile.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CLIMATE -->
+<section id="climate">
+  <p class="section-label">Climate Action</p>
+  <h2>A tool for the<br><em>carbon century</em></h2>
+  <div class="divider"></div>
+  <div class="climate-split">
+    <div>
+      <blockquote class="climate-quote">"Biochar represents one of the few truly carbon-negative technologies available to us today."</blockquote>
+      <p style="margin-top:1.5rem; font-size:.85rem; opacity:.6">— IPCC Working Group III, Chapter on Carbon Dioxide Removal</p>
+      <div style="margin-top:2.5rem">
+        <p>The IPCC has identified biochar as a high-potential carbon dioxide removal (CDR) pathway with co-benefits for food security and land restoration — a rare win-win-win in climate solutions.</p>
+        <p>Unlike direct air capture, biochar uses biological carbon already cycled through crops and forests. It doesn't require new land, exotic minerals, or vast energy inputs — just existing agricultural waste streams transformed by heat.</p>
+      </div>
+    </div>
+    <div>
+      <p>Modelling by the Potsdam Institute and others suggests biochar could sustainably remove <strong style="color:var(--cream)">1–2.6 gigatonnes of CO₂ per year</strong> by mid-century — equivalent to shutting down hundreds of coal power plants.</p>
+      <p>Critically, biochar's co-benefits mean it <em style="color:var(--ash)">pays for itself</em> in improved agricultural productivity long before carbon credits are factored in. This makes it accessible to farmers in the Global South, where it's needed most.</p>
+      <div style="margin-top:2rem; padding:1.5rem; border:1px solid rgba(212,201,176,.1); background:rgba(196,92,26,.05)">
+        <p class="section-label" style="margin-bottom:.8rem">Carbon Math</p>
+        <p style="font-size:.88rem; margin:0">Turning 1 tonne of dry woody biomass into biochar sequesters ~1.8 tonnes of CO₂ equivalent, while the pyrolysis process itself can generate ~0.5 MWh of usable heat energy.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <p class="section-label">Common Questions</p>
+  <h2>Frequently <em>asked</em></h2>
+  <div class="divider"></div>
+  <div class="faq-list">
+    <div class="faq-item">
+      <button class="faq-q">Is biochar the same as charcoal?<span class="arrow">▼</span></button>
+      <div class="faq-a"><p>They share the same production process (pyrolysis), but biochar is produced specifically for soil application and environmental benefit. Charcoal is typically optimised for combustion energy. Biochar undergoes quality controls to ensure low levels of polycyclic aromatic hydrocarbons (PAHs) and other potentially harmful compounds.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">Does biochar work in all soils?<span class="arrow">▼</span></button>
+      <div class="faq-a"><p>Biochar shows the greatest benefits in degraded, sandy, or acidic soils with low organic matter. In already-fertile soils with high organic content, benefits are more modest. Soil testing before application ensures the right feedstock type and application rate for maximum impact.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">Can biochar be harmful?<span class="arrow">▼</span></button>
+      <div class="faq-a"><p>Poorly made biochar can contain harmful PAHs and heavy metals from contaminated feedstocks. International standards (IBI, EBC) set quality thresholds for safe soil application. Certified biochar from reputable producers is safe and beneficial. Never apply large amounts of fresh, uncharged biochar — it can temporarily immobilise soil nitrogen.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">How much does it cost?<span class="arrow">▼</span></button>
+      <div class="faq-a"><p>Biochar currently costs $200–$800 per tonne depending on feedstock, scale, and region. At 1–5 t/ha application rates, this represents a significant upfront investment. However, carbon credit markets, energy co-production, and improved yields often make the full system economics positive. Costs are falling as scale increases.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">How do I start with biochar?<span class="arrow">▼</span></button>
+      <div class="faq-a"><p>Home gardeners can begin with small-scale retort kilns or cone kilns for backyard biochar production, or purchase certified biochar online. For farm-scale use, partner with local pyrolysis operators or look into co-operative production units. Always "charge" biochar with compost or liquid fertiliser before applying to soil.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">Is biochar verified for carbon credits?<span class="arrow">▼</span></button>
+      <div class="faq-a"><p>Yes. Several registries (Puro.earth, Gold Standard, Verra's VCS) now offer verified carbon credits for biochar projects. The credits require documentation of feedstock origin, production conditions, soil application, and stability testing. Premium certified biochar commands $100–$300/tonne in voluntary carbon markets.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">Bio<span>char</span></div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h4>Learn</h4>
+        <a href="#what">What is Biochar</a>
+        <a href="#benefits">Benefits</a>
+        <a href="#process">Production Process</a>
+        <a href="#applications">Applications</a>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <a href="https://www.biochar-international.org" target="_blank" rel="noopener">IBI Standards</a>
+        <a href="https://www.european-biochar.org" target="_blank" rel="noopener">EBC Certification</a>
+        <a href="https://puro.earth" target="_blank" rel="noopener">Puro.earth Credits</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div class="footer-col">
+        <h4>Climate</h4>
+        <a href="#climate">Carbon Removal</a>
+        <a href="#stats">By the Numbers</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 Biochar Information Resource. Educational use.</p>
+    <p>Carbon into the earth. Since 500 BCE.</p>
+  </div>
+</footer>
+
+<script>
+  // FAQ accordion
+  document.querySelectorAll('.faq-q').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.parentElement;
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    });
+  });
+
+  // Intersection observer for subtle scroll reveals
+  const reveals = document.querySelectorAll('.benefit-card, .step, .app-card');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }, (i % 4) * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  reveals.forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>
